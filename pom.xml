@@ -76,6 +76,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <publishingServerId>central</publishingServerId>
+                    <skipPublishing>${skipPublish}</skipPublishing>
                 </configuration>
             </plugin>
             <plugin>
