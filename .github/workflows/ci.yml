@@ -25,10 +25,10 @@ jobs:
           cache: maven
 
       - name: Run unit tests
-        run: mvn -B test
+        run: mvn -B test -DskipGpg=true
 
       - name: Run integration tests
-        run: mvn -B -am -Pintegration-test verify
+        run: mvn -B -am -Pintegration-test verify -DskipGpg=true
 
       - name: Compile applications
-        run: mvn -B -am -DskipTests compile
+        run: mvn -B -am -DskipTests compile -DskipGpg=true
