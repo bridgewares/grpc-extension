@@ -29,12 +29,12 @@ jobs:
           server-password: GITHUB_TOKEN
 
       - name: Run tests
-        run: mvn -B test -DskipGpg=true
+        run: mvn -B test
 
       - name: Run integration tests
-        run: mvn -B -Pintegration-test verify -DskipGpg=true
+        run: mvn -B -Pintegration-test verify
 
       - name: Publish packages
-        run: mvn -B -DskipTests deploy -DskipGpg=true -DskipPublish=true
+        run: mvn -B deploy -DskipTests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
