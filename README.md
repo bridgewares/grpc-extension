@@ -1,35 +1,37 @@
-# gRPC Extension: Route-Aware Load Balancer
+# gRPC扩展：路由感知负载均衡器
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![许可证](https://img.shields.io/badge/许可证-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.bridgewares/grpc-extension)](https://search.maven.org/artifact/io.github.bridgewares/grpc-extension)
-[![GitHub](https://img.shields.io/badge/GitHub-View%20Source-green?logo=github)](https://github.com/bridgewares/grpc-extension)
+[![GitHub](https://img.shields.io/badge/GitHub-查看源码-green?logo=github)](https://github.com/bridgewares/grpc-extension)
 
-A Java extension for gRPC that implements route-aware load balancing based on request headers. This extension enhances gRPC's default load balancing capabilities by allowing clients to route requests to specific servers using a `routeKey` header, while maintaining round-robin fallback behavior.
 
-## Features
+一个用于gRPC的Java扩展，实现了基于请求头的路由感知负载均衡。此扩展通过允许客户端使用`routeKey`头部将请求路由到特定服务器，同时保持轮询回退行为，增强了gRPC的默认负载均衡功能。
 
-- **Route-Aware Load Balancing**: Route requests to specific servers based on the `routeKey` header
-- **Round-Robin Fallback**: Default to round-robin load balancing when no `routeKey` is specified
-- **Graceful Degradation**: Fall back to round-robin when the specified server in `routeKey` is unavailable
-- **IPv4/IPv6 Support**: Supports both IPv4 and IPv6 address formats in route keys
-- **Seamless Integration**: Works as a drop-in replacement for gRPC's default load balancer
+## 功能特性
 
-## Architecture
+- **路由感知负载均衡**：基于`routeKey`头部将请求路由到特定服务器
+- **轮询回退**：当未指定`routeKey`时默认使用轮询负载均衡
+- **优雅降级**：当`routeKey`中指定的服务器不可用时回退到轮询
+- **IPv4/IPv6支持**：支持路由键中的IPv4和IPv6地址格式
+- **无缝集成**：可作为gRPC默认负载均衡器的即插即用替换
 
-This extension implements a custom gRPC `LoadBalancer` that extends the standard round-robin load balancer with routing capabilities:
+## 架构说明
 
-- **RouteAwareRoundRobinLoadBalancer**: The main load balancer implementation that handles both route-aware and round-robin selection
-- **ReadyPicker**: Selects subchannels based on route key or round-robin strategy
-- **EmptyPicker**: Handles cases where no suitable subchannel is available
+此扩展实现了一个自定义的gRPC `LoadBalancer`，它扩展了标准的轮询负载均衡器，并添加了路由功能：
 
-## Build and Installation
+- **RouteAwareRoundRobinLoadBalancer**：主要的负载均衡器实现，处理路由感知和轮询选择
+- **RouteAwareLoadBalancerProvider**：负载均衡器提供者，用于注册和创建负载均衡器实例
+- **ReadyPicker**：根据路由键或轮询策略选择子通道
+- **EmptyPicker**：处理没有合适子通道的情况
 
-### Prerequisites
+## 构建和安装
 
-- Java 17 or higher
-- Maven 3.6 or higher
+### 前置要求
 
-### Building from Source
+- Java 17或更高版本
+- Maven 3.6或更高版本
+
+### 从源码构建
 
 ```bash
 git clone https://github.com/bridgewares/grpc-extension.git
@@ -37,9 +39,9 @@ cd grpc-extension
 mvn clean install
 ```
 
-### Maven Dependency
+### Maven依赖
 
-Add the following dependency to your `pom.xml`:
+将以下依赖添加到您的`pom.xml`中：
 
 ```xml
 <dependency>
@@ -49,113 +51,115 @@ Add the following dependency to your `pom.xml`:
 </dependency>
 ```
 
-## Usage
+## 使用方法
 
-### Configuration
+### 配置
 
-To use this load balancer, you need to configure it in your gRPC channel builder:
+要使用此负载均衡器，您需要在gRPC通道构建器中配置它：
 
 ```java
 import io.grpc.LoadBalancerRegistry;
-import io.grpc.loadbalance.RouteAwareRoundRobinLoadBalancer;
+import io.grpc.loadbalance.RouteAwareLoadBalancerProvider;
 
-// Register the custom load balancer
+// 注册自定义负载均衡器（如果需要手动注册）
 LoadBalancerRegistry.getDefaultRegistry()
-    .register(new RouteAwareRoundRobinLoadBalancer.Factory());
+    .register(new RouteAwareLoadBalancerProvider());
 
-// Use it in your channel builder
+// 使用它在通道构建器中
 ManagedChannel channel = ManagedChannelBuilder.forTarget("your-service")
-    .defaultLoadBalancingPolicy("round_robin")
+    .defaultLoadBalancingPolicy("round_robin")  // 使用round_robin策略会自动使用我们的实现
     .build();
 ```
 
-### Route Key Format
+### 路由键格式
 
-The `routeKey` header should be in the format `host:port` or `[ipv6]:port`:
+`routeKey`头部应为`host:port`或`[ipv6]:port`格式：
 
-- **IPv4**: `192.168.1.1:8080`
-- **IPv6**: `[::1]:8080`
+- **IPv4**：`192.168.1.1:8080`
+- **IPv6**：`[::1]:8080`
 
-### Example Usage
+### 使用示例
 
-#### With Route Key
+#### 使用路由键
 
 ```java
-// Create headers with route key
+// 创建带有路由键的头部
 Metadata headers = new Metadata();
-headers.put(Metadata.Key.of("route-key", Metadata.ASCII_STRING_MARSHALLER), "192.168.1.1:8080");
+headers.put(Metadata.Key.of("routeKey", Metadata.ASCII_STRING_MARSHALLER), "192.168.1.1:8080");
 
-// Make request with route key
+// 使用路由键发送请求
 responseStub.yourMethod(request, headers);
 ```
 
-#### Without Route Key (Round Robin)
+#### 不使用路由键（轮询）
 
 ```java
-// Make request without route key - uses round-robin
+// 不使用路由键发送请求 - 使用轮询
 responseStub.yourMethod(request);
 ```
 
-## Routing Logic
+## 路由逻辑
 
-The load balancer follows this routing logic:
+负载均衡器遵循以下路由逻辑：
 
-1. **Check for Route Key**: If the request contains a valid `routeKey` header:
-   - Parse the host and port from the route key
-   - Attempt to route to the specified server
-   - If the server is available, route the request there
-   - If the server is not available, fall back to round-robin
+1. **检查路由键**：如果请求包含有效的`routeKey`头部：
+   - 从路由键解析主机和端口
+   - 尝试路由到指定的服务器
+   - 如果服务器可用，将请求路由到那里
+   - 如果服务器不可用，回退到轮询
 
-2. **No Route Key**: If no `routeKey` is present:
-   - Use standard round-robin load balancing across all available servers
+2. **无路由键**：如果未提供`routeKey`：
+   - 在所有可用服务器上使用标准轮询负载均衡
 
-3. **Error Handling**:
-   - Invalid route key format returns `INVALID_ARGUMENT` status
-   - Non-existent server returns `NOT_FOUND` status
-   - Network errors are handled gracefully with fallback to round-robin
+3. **错误处理**：
+   - 无效的路由键格式返回`INVALID_ARGUMENT`状态
+   - 不存在的服务器返回`NOT_FOUND`状态
+   - 网络错误被优雅处理，回退到轮询
 
-## Development
-
-### Project Structure
+## 项目结构
 
 ```
 grpc-extension/
 ├── src/main/java/io/grpc/loadbalance/
-│   └── RouteAwareRoundRobinLoadBalancer.java
+│   ├── RouteAwareRoundRobinLoadBalancer.java    # 主要负载均衡实现
+│   └── RouteAwareLoadBalancerProvider.java       # 负载均衡器提供者
 ├── pom.xml
-└── README.md
+├── README.md                                   # 中文版本（本文件）
+└── README.en.md                                # 英文版本
 ```
 
-### Contributing
+## 开发和贡献
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Submit a pull request
+### 贡献指南
 
-### Testing
+1. Fork此仓库
+2. 创建功能分支
+3. 进行您的更改
+4. 为新功能添加测试
+5. 提交pull request
 
-Run the tests using Maven:
+### 测试
+
+使用Maven运行测试：
 
 ```bash
 mvn test
 ```
 
-## License
+## 版本历史
 
-This project is licensed under the Apache License, Version 2.0. See the [LICENSE](LICENSE) file for details.
+- **0.0.1** - 初始版本，包含路由感知轮询负载均衡功能
 
-## Authors
+## 许可证
 
-- [whugeomatics](https://github.com/whugeomatics) - whugeomatics@gmail.com
+本项目采用Apache许可证2.0版本。请参阅[LICENSE](LICENSE)文件了解详情。
 
-## Acknowledgments
+## 致谢
 
-- Built upon the gRPC framework
-- Inspired by the need for more flexible load balancing strategies in microservices architectures
-- Thanks to the gRPC community for the excellent framework and documentation
+- 基于gRPC框架构建
+- 受微服务架构中更灵活负载均衡策略需求的启发
+- 感谢gRPC社区提供的优秀框架和文档
 
-## Version History
+---
 
-- **0.0.1** - Initial release with route-aware round-robin load balancing
+**[English Version](./README.EN.md)** | 中文版本
