@@ -4,6 +4,8 @@
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.bridgewares/grpc-extension)](https://search.maven.org/artifact/io.github.bridgewares/grpc-extension)
 [![GitHub](https://img.shields.io/badge/GitHub-View%20Source-green?logo=github)](https://github.com/bridgewares/grpc-extension)
 
+![arch](./images/arch.png)
+
 A Java extension for gRPC that implements route-aware load balancing based on request headers. This extension enhances gRPC's default load balancing capabilities by allowing clients to route requests to specific servers using a `routeKey` header, while maintaining round-robin fallback behavior.
 
 ## Features
