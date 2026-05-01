@@ -4,6 +4,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.bridgewares/grpc-extension)](https://search.maven.org/artifact/io.github.bridgewares/grpc-extension)
 [![GitHub](https://img.shields.io/badge/GitHub-查看源码-green?logo=github)](https://github.com/bridgewares/grpc-extension)
 
+![arch](./images/arch.png)
 
 一个用于gRPC的Java扩展，实现了基于请求头的路由感知负载均衡。此扩展通过允许客户端使用`routeKey`头部将请求路由到特定服务器，同时保持轮询回退行为，增强了gRPC的默认负载均衡功能。
 
