@@ -1,3 +1,5 @@
+**[Chinese Version](./README.md)** | English version
+
 # gRPC Extension: Route-Aware Load Balancer
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -161,7 +163,3 @@ This project is licensed under the Apache License, Version 2.0. See the [LICENSE
 - Built upon the gRPC framework
 - Inspired by the need for more flexible load balancing strategies in microservices architectures
 - Thanks to the gRPC community for the excellent framework and documentation
-
----
-
-**[Chinese Version](./README.md)** | English version
