@@ -1,3 +1,5 @@
+**[English Version](./README.EN.md)** | 中文版本
+
 # gRPC扩展：路由感知负载均衡器
 
 [![许可证](https://img.shields.io/badge/许可证-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -160,7 +162,3 @@ mvn test
 - 基于gRPC框架构建
 - 受微服务架构中更灵活负载均衡策略需求的启发
 - 感谢gRPC社区提供的优秀框架和文档
-
----
-
-**[English Version](./README.EN.md)** | 中文版本
